@@ -147,7 +147,7 @@ export default function Home() {
           <button
             onClick={() => {
               logout();
-              router.push("/login");
+              router.push("/");
             }}
           >
             Logout
@@ -287,4 +287,5 @@ const tdStyle = { padding: '8px', border: '1px solid #ccc' };
 const btnEdit = { backgroundColor: '#f0ad4e', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
 const btnDelete = { backgroundColor: '#d9534f', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
 const btnToggle = { backgroundColor: '#5bc0de', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
+
 
