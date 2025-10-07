@@ -16,7 +16,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    if (!token) router.push("/login");
+    if (!token) router.push("/");
     else fetchTasks();
 
     const savedTheme = localStorage.getItem("theme") || "light";
@@ -287,5 +287,6 @@ const tdStyle = { padding: '8px', border: '1px solid #ccc' };
 const btnEdit = { backgroundColor: '#f0ad4e', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
 const btnDelete = { backgroundColor: '#d9534f', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
 const btnToggle = { backgroundColor: '#5bc0de', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
+
 
 
