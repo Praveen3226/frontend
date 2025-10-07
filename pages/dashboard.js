@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../src/context/AuthContext";
 import { useRouter } from "next/router";
-import "../styles/globals.css"; // <-- make sure you created this file
+import "../styles/globals.css"; 
 
 export default function Home() {
   const { token, logout } = useContext(AuthContext);
@@ -15,7 +15,7 @@ export default function Home() {
   const [filter, setFilter] = useState({ priority: "All", status: "All" });
   const [theme, setTheme] = useState("light");
 
-  // Load token + theme
+
   useEffect(() => {
     if (!token) router.push("/login");
     else fetchTasks();
@@ -137,10 +137,14 @@ export default function Home() {
         }}
       >
         <h1>Your Tasks</h1>
-        <div>
-          <button onClick={toggleTheme} style={{ marginRight: "10px" }}>
-            {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-          </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="theme-switch-wrapper" onClick={toggleTheme} style={{ cursor: "pointer" }}>
+            <span className="theme-label">{theme === "light" ? "Light" : "Dark"}</span>
+            <div className="theme-switch">
+              <input type="checkbox" checked={theme === "dark"} readOnly />
+              <span className="slider"></span>
+            </div>
+          </div>
           <button
             onClick={() => {
               logout();
@@ -151,8 +155,6 @@ export default function Home() {
           </button>
         </div>
       </header>
-
-      {/* Task Form */}
       <form onSubmit={addOrUpdate} className="task-form">
         <input
           placeholder="Title"
@@ -192,7 +194,8 @@ export default function Home() {
       </button>
       {msg && <p>{msg}</p>}
 
-      {/* Filters */}
+
+      <h3>Filters</h3>
       <div className="filters-bar">
         <div className="filter-group">
           <label>Priority :</label>
@@ -237,8 +240,7 @@ export default function Home() {
           />
         </div>
       </div>
-
-      {/* Table */}
+      <div className="table-wrapper">
       <table className="task-table">
         <thead>
           <tr>
@@ -272,8 +274,8 @@ export default function Home() {
             </tr>
           ))}
         </tbody>
-      </table>
-
+  </table>
+</div>
       <p style={{ marginTop: "10px", fontStyle: "italic" }}>
         Showing {filteredTasks.length} of {tasks.length} tasks
       </p>
