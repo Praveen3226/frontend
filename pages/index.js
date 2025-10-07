@@ -36,7 +36,7 @@ export default function AuthPage() {
           password: form.password
         });
         login(res.data.token);
-        router.push('/dasboard');
+        router.push('/dashboard');
       } else {
         await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, form);
         setMsg('Account created successfully! Please login.');
@@ -101,3 +101,4 @@ export default function AuthPage() {
     </div>
   );
 }
+
