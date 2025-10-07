@@ -1,8 +1,7 @@
-import { useEffect, useState, useContext } from "react";
-import axios from "axios";
-import { AuthContext } from "../src/context/AuthContext";
-import { useRouter } from "next/router";
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { AuthContext } from '../src/context/AuthContext';
 
 export default function AuthPage() {
   const { login } = useContext(AuthContext);
@@ -14,27 +13,6 @@ export default function AuthPage() {
 
   const [theme, setTheme] = useState('light');
 
-    useEffect(() => {
-    if (!token) router.push("/login");
-    else fetchTasks();
-
-    const savedTheme = localStorage.getItem("theme") || "light";
-    setTheme(savedTheme);
-    document.body.className = savedTheme;
-  }, [token]);
-
-  const fetchTasks = async () => {
-    try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTasks(res.data);
-    } catch (err) {
-      console.error(err);
-      if (err.response?.status === 401) logout();
-    }
-  };
-  
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
     setTheme(savedTheme);
@@ -58,7 +36,7 @@ export default function AuthPage() {
           password: form.password
         });
         login(res.data.token);
-        router.push('/');
+        router.push('/dasboard');
       } else {
         await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, form);
         setMsg('Account created successfully! Please login.');
@@ -123,4 +101,3 @@ export default function AuthPage() {
     </div>
   );
 }
-
