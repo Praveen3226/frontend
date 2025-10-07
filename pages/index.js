@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../src/context/AuthContext";
 import { useRouter } from "next/router";
-import "../styles/globals.css"; // <-- make sure you created this file
+
 
 export default function Home() {
   const { token, logout } = useContext(AuthContext);
@@ -285,4 +285,5 @@ const tdStyle = { padding: '8px', border: '1px solid #ccc' };
 
 const btnEdit = { backgroundColor: '#f0ad4e', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
 const btnDelete = { backgroundColor: '#d9534f', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
+
 const btnToggle = { backgroundColor: '#5bc0de', color: '#fff', padding: '4px 8px', border: 'none', borderRadius: '4px' };
