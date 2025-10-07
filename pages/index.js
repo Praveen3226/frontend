@@ -3,9 +3,6 @@ import axios from "axios";
 import { AuthContext } from "../src/context/AuthContext";
 import { useRouter } from "next/router";
 import { useState, useContext } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { AuthContext } from '../src/context/AuthContext';
 
 export default function AuthPage() {
   const { login } = useContext(AuthContext);
@@ -126,3 +123,4 @@ export default function AuthPage() {
     </div>
   );
 }
+
