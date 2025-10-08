@@ -19,6 +19,8 @@ export default function Home() {
 
   const indexOfLastTask = currentPage * entriesPerPage;
   const indexOfFirstTask = indexOfLastTask - entriesPerPage;
+  const [notification, setNotification] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     if (!token) router.push("/");
@@ -41,40 +43,47 @@ export default function Home() {
     }
   };
 
-  const addOrUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTasks([res.data, ...tasks]);
-      setForm({ title: "", description: "", priority: "Low" });
-    } catch (err) {
-      setMsg(err.response?.data?.msg || "Action failed");
-    }
-  };
+    const addOrUpdate = async (e) => {
+      e.preventDefault();
+      try {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, form, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTasks([res.data, ...tasks]);
+        setForm({ title: "", description: "", priority: "Low" });
+        triggerNotification("Task added successfully ✅");
+      } catch (err) {
+        setMsg(err.response?.data?.msg || "Action failed");
+      }
+    };
 
-  const del = async (id) => {
-    if (!id || !window.confirm("Delete this task?")) return;
-    try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTasks(tasks.filter((t) => t._id !== id));
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.msg || "Failed to delete task");
-    }
-  };
+    const del = async (id) => {
+      if (!id || !window.confirm("Delete this task?")) return;
+      try {
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTasks(tasks.filter((t) => t._id !== id));
+        triggerNotification("Task deleted successfully 🗑️");
+      } catch (err) {
+        console.error(err);
+        alert(err.response?.data?.msg || "Failed to delete task");
+      }
+    };
 
-  const toggleComplete = async (task) => {
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_API_URL}/tasks/${task._id}`,
-      { completed: !task.completed },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setTasks(tasks.map((t) => (t._id === task._id ? res.data : t)));
-  };
+    const toggleComplete = async (task) => {
+      const res = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/tasks/${task._id}`,
+        { completed: !task.completed },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTasks(tasks.map((t) => (t._id === task._id ? res.data : t)));
+      triggerNotification(
+        task.completed
+          ? "Task marked as pending ⏳"
+          : "Task completed successfully ✅"
+      );
+    };
 
   const handlePriorityChange = async (taskId, newPriority) => {
     try {
@@ -109,7 +118,11 @@ export default function Home() {
     localStorage.setItem("theme", newTheme);
   };
 
-
+    const triggerNotification = (msg) => {
+      setNotification(msg);
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 2000); // hides after 2 seconds
+    };
   const priorityOrder = { High: 3, Medium: 2, Low: 1 };
 
   const filteredTasks = tasks
@@ -156,6 +169,12 @@ export default function Home() {
           </button>
         </div>
       </header>
+      
+      {showNotification && (
+        <div className="notification-popup">
+          {notification}
+        </div>
+      )}
 
       {/* Task Form */}
       <form onSubmit={addOrUpdate} className="task-form">
