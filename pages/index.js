@@ -2,6 +2,8 @@ import { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { AuthContext } from '../src/context/AuthContext';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function AuthPage() {
   const { login } = useContext(AuthContext);
@@ -12,6 +14,8 @@ export default function AuthPage() {
   const [msg, setMsg] = useState('');
 
   const [theme, setTheme] = useState('light');
+  const [showPassword, setShowPassword] = useState(false);
+
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
@@ -78,13 +82,21 @@ export default function AuthPage() {
             onChange={e => setForm({ ...form, email: e.target.value })}
             required
           />
-          <input
-            placeholder="Password"
-            type="password"
-            value={form.password}
-            onChange={e => setForm({ ...form, password: e.target.value })}
-            required
-          />
+          <div className="password-field">
+            <input
+              placeholder="Password"
+              type={showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
+            <FontAwesomeIcon
+              icon={showPassword ? faEyeSlash : faEye}
+              className="eye-icon"
+              onClick={() => setShowPassword(!showPassword)}
+            />
+          </div>
+
           <button type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
         </form>
 
@@ -101,4 +113,3 @@ export default function AuthPage() {
     </div>
   );
 }
-
