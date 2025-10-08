@@ -2,9 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../src/context/AuthContext";
 import { useRouter } from "next/router";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt, faCheckCircle, faUndo, faTasks, faHourglassHalf } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt, faCheckCircle, faUndo, faTasks, faHourglassHalf } from "@fortawesome/free-solid-svg-icons";
 
 export default function Home() {
   const { token, logout } = useContext(AuthContext);
@@ -12,12 +11,11 @@ export default function Home() {
 
   const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState({ title: "", description: "", priority: "Low" });
-  const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState("");
   const [filter, setFilter] = useState({ priority: "All", status: "All" });
   const [theme, setTheme] = useState("light");
   const [currentPage, setCurrentPage] = useState(1);
-  const [entriesPerPage, setEntriesPerPage] = useState(5); 
+  const [entriesPerPage, setEntriesPerPage] = useState(5);
 
   const indexOfLastTask = currentPage * entriesPerPage;
   const indexOfFirstTask = indexOfLastTask - entriesPerPage;
@@ -46,22 +44,10 @@ export default function Home() {
   const addOrUpdate = async (e) => {
     e.preventDefault();
     try {
-      if (editingId) {
-        const res = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/tasks/${editingId}`,
-          form,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setTasks((ts) => ts.map((t) => (t._id === editingId ? res.data : t)));
-        setEditingId(null);
-      } else {
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/tasks`,
-          form,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setTasks([res.data, ...tasks]);
-      }
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, form, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTasks([res.data, ...tasks]);
       setForm({ title: "", description: "", priority: "Low" });
     } catch (err) {
       setMsg(err.response?.data?.msg || "Action failed");
@@ -90,13 +76,22 @@ export default function Home() {
     setTasks(tasks.map((t) => (t._id === task._id ? res.data : t)));
   };
 
-  const edit = (task) => {
-    setEditingId(task._id);
-    setForm({
-      title: task.title,
-      description: task.description || "",
-      priority: task.priority || "Low",
-    });
+  const handlePriorityChange = async (taskId, newPriority) => {
+    try {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/tasks/${taskId}`,
+        { priority: newPriority },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTasks((prevTasks) =>
+        prevTasks.map((t) =>
+          t._id === taskId ? { ...t, priority: newPriority } : t
+        )
+      );
+    } catch (err) {
+      console.error("Error updating priority:", err);
+      alert("Failed to update priority");
+    }
   };
 
   const clearCompleted = async () => {
@@ -114,22 +109,6 @@ export default function Home() {
     localStorage.setItem("theme", newTheme);
   };
 
-  const getPriorityStyle = (priority) => {
-    let color = "";
-    if (priority === "High") color = "#d9534f";
-    else if (priority === "Medium") color = "#f0ad4e";
-    else if (priority === "Low") color = "#5cb85c";
-
-    return {
-      backgroundColor: color,
-      color: "#fff",
-      padding: "4px 10px",
-      borderRadius: "12px",
-      textAlign: "center",
-      display: "inline-block",
-      minWidth: "60px",
-    };
-  };
 
   const priorityOrder = { High: 3, Medium: 2, Low: 1 };
 
@@ -151,11 +130,6 @@ export default function Home() {
 
       return matchPriority && matchStatus && matchDate;
     })
-    .sort((a, b) => {
-      if (a.completed && !b.completed) return -1;
-      if (!a.completed && b.completed) return 1;
-      return priorityOrder[b.priority] - priorityOrder[a.priority];
-    });
 
   const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
 
@@ -207,18 +181,10 @@ export default function Home() {
           <option>Medium</option>
           <option>Low</option>
         </select>
-        <button type="submit">{editingId ? "Update" : "Add"}</button>
-        {editingId && (
-          <button
-            type="button"
-            onClick={() => setEditingId(null) || setForm({ title: "", description: "", priority: "Low" })}
-          >
-            Cancel
-          </button>
-        )}
+        <button type="submit">Add</button>
       </form>
 
-      {/* Filters Bar */}
+      {/* Filters */}
       <div className="filters-bar" style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "16px", alignItems: "center" }}>
         {["Priority", "Status", "From", "To"].map((label) => (
           <div
@@ -276,8 +242,6 @@ export default function Home() {
             )}
           </div>
         ))}
-
-        {/* Clear Completed */}
         <button
           onClick={clearCompleted}
           style={{
@@ -296,37 +260,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="task-summary-cards" style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
-        {[
-          { icon: faTasks, label: "Total Tasks", count: tasks.length, bg: "#f8f9fa", color: "#17a2b8" },
-          { icon: faCheckCircle, label: "Completed", count: tasks.filter(t => t.completed).length, bg: "#e6f4ea", color: "#28a745" },
-          { icon: faHourglassHalf, label: "Pending", count: tasks.filter(t => !t.completed).length, bg: "#fff5f5", color: "#dc3545" },
-        ].map((card) => (
-          <div
-            key={card.label}
-            style={{
-              flex: 1,
-              background: theme === "dark" ? "#2c2c2c" : card.bg,
-              color: theme === "dark" ? "#eee" : "#343a40",
-              padding: "12px 16px",
-              borderRadius: "8px",
-              textAlign: "center",
-              boxShadow: theme === "dark" ? "0 2px 5px rgba(0,0,0,0.3)" : "0 2px 5px rgba(0,0,0,0.1)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <FontAwesomeIcon icon={card.icon} style={{ fontSize: "20px", marginBottom: "4px", color: card.color }} />
-            <span style={{ fontSize: "12px", fontWeight: "500" }}>{card.label}</span>
-            <span style={{ fontSize: "18px", fontWeight: "700" }}>{card.count}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Task Table */}
+      {/* Table */}
       <div className="table-wrapper">
         <table className="task-table" style={{ width: "100%", borderCollapse: "collapse", color: theme === "dark" ? "#eee" : "#333" }}>
           <thead>
@@ -359,14 +293,68 @@ export default function Home() {
               >
                 <td>{task.title}</td>
                 <td>{task.description || "-"}</td>
-                <td>
-                  <span style={getPriorityStyle(task.priority)}>{task.priority}</span>
-                </td>
+              <td>
+                <select
+                  value={task.priority}
+                  onChange={(e) => handlePriorityChange(task._id, e.target.value)}
+                  style={{
+                    background:
+                      task.priority === "High"
+                        ? "#ff4d4d"   // solid red
+                        : task.priority === "Medium"
+                        ? "#ffd700"   // solid yellow
+                        : "#00fa9a",  // solid green
+                    color: "#000", // black text
+                    border: "1px solid #888",
+                    borderRadius: "6px",
+                    padding: "4px 8px",
+                    cursor: "pointer",
+                    outline: "none",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    textTransform: "capitalize",
+                    transition: "all 0.2s ease",
+                    boxShadow:
+                      theme === "dark"
+                        ? "0 0 4px rgba(255,255,255,0.2)"
+                        : "0 0 3px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <option
+                    value="Low"
+                    style={{
+                      background: "#00fa9a",
+                      color: "#000",
+                    }}
+                  >
+                    Low
+                  </option>
+                  <option
+                    value="Medium"
+                    style={{
+                      background: "#ffd700",
+                      color: "#000",
+                    }}
+                  >
+                    Medium
+                  </option>
+                  <option
+                    value="High"
+                    style={{
+                      background: "#ff4d4d",
+                      color: "#000",
+                    }}
+                  >
+                    High
+                  </option>
+                </select>
+              </td>
+
+
                 <td>{task.completed ? "✅ Completed" : "⏳ Pending"}</td>
                 <td>{task.completedAt ? new Date(task.completedAt).toLocaleString() : "-"}</td>
                 <td>{new Date(task.createdAt).toLocaleString()}</td>
                 <td className="actions" style={{ display: "flex", gap: "4px" }}>
-                  <button onClick={() => edit(task)} className="icon-btn edit-btn"><FontAwesomeIcon icon={faEdit} /></button>
                   <button onClick={() => del(task._id)} className="icon-btn delete-btn"><FontAwesomeIcon icon={faTrashAlt} /></button>
                   <button onClick={() => toggleComplete(task)} className="icon-btn toggle-btn">
                     <FontAwesomeIcon icon={task.completed ? faUndo : faCheckCircle} />
