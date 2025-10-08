@@ -278,6 +278,69 @@ export default function Home() {
           Clear Completed
         </button>
       </div>
+      {/* Summary Cards */}
+      <div
+        className="task-summary-cards"
+        style={{
+          display: "flex",
+          gap: "12px",
+          marginBottom: "16px",
+          flexWrap: "wrap",
+          justifyContent: "center",
+        }}
+      >
+        {[
+          {
+            icon: faTasks,
+            label: "Total Tasks",
+            count: tasks.length,
+            bg: "#f8f9fa",
+            color: "#17a2b8",
+          },
+          {
+            icon: faCheckCircle,
+            label: "Completed",
+            count: tasks.filter((t) => t.completed).length,
+            bg: "#e6f4ea",
+            color: "#28a745",
+          },
+          {
+            icon: faHourglassHalf,
+            label: "Pending",
+            count: tasks.filter((t) => !t.completed).length,
+            bg: "#fff5f5",
+            color: "#dc3545",
+          },
+        ].map((card) => (
+          <div
+            key={card.label}
+            style={{
+              flex: 1,
+              minWidth: "120px",
+              background: theme === "dark" ? "#2c2c2c" : card.bg,
+              color: theme === "dark" ? "#eee" : "#343a40",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              textAlign: "center",
+              boxShadow:
+                theme === "dark"
+                  ? "0 2px 5px rgba(0,0,0,0.3)"
+                  : "0 2px 5px rgba(0,0,0,0.1)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              icon={card.icon}
+              style={{ fontSize: "20px", marginBottom: "4px", color: card.color }}
+            />
+            <span style={{ fontSize: "12px", fontWeight: "500" }}>{card.label}</span>
+            <span style={{ fontSize: "18px", fontWeight: "700" }}>{card.count}</span>
+          </div>
+        ))}
+      </div>
 
       {/* Table */}
       <div className="table-wrapper">
@@ -409,3 +472,4 @@ export default function Home() {
     </div>
   );
 }
+
