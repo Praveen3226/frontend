@@ -17,6 +17,7 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+
 body.light {
   --bg: #f7f8fa;
   --card-bg: #ffffff;
@@ -99,7 +100,6 @@ button:hover {
   transition: background 0.2s ease;
 }
 
-
 .actions button {
   margin-right: 6px;
   border-radius: 6px;
@@ -111,6 +111,7 @@ button:hover {
 .edit-btn:hover { background-color: #d97706; }
 .delete-btn:hover { background-color: #dc2626; }
 .toggle-btn:hover { background-color: #2563eb; }
+
 
 .filters-bar {
   display: flex;
@@ -131,6 +132,7 @@ button:hover {
   color: var(--muted);
   margin-bottom: 4px;
 }
+
 
 .theme-switch-wrapper {
   display: flex;
@@ -162,10 +164,12 @@ button:hover {
 .theme-switch input:checked + .slider {
   transform: translateX(20px);
 }
+
 .tooltip {
   position: relative;
   display: inline-block;
 }
+
 
 .tooltip .tooltiptext {
   visibility: hidden;
@@ -189,13 +193,14 @@ button:hover {
 .tooltip .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
+  top: 100%; 
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
   border-color: var(--text) transparent transparent transparent;
 }
+
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
@@ -217,15 +222,18 @@ button:hover {
 .page-btn:hover:not(:disabled) {
   background-color: #1d4ed8;
 }
+
 .completed-row {
   background-color: #d4edda; 
   color: #155724; 
 }
 
+
 body.dark .completed-row {
   background-color: #1b4620;
   color: #d4edda; 
 }
+
 .auth-container {
   display: flex;
   justify-content: center;
@@ -238,6 +246,7 @@ body.dark .completed-row {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+
 .auth-box {
   background-color: var(--card-bg);
   padding: 40px 30px;
@@ -248,6 +257,7 @@ body.dark .completed-row {
   text-align: center;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 
 body.light {
   --bg-color: #f5f5f5;
@@ -270,6 +280,7 @@ body.dark {
   --button-color: #fff;
   --button-hover: #084298;
 }
+
 
 .auth-theme-toggle {
   display: flex;
@@ -315,7 +326,7 @@ body.dark {
 }
 
 input:checked + .slider:before {
-  transform: translateX(18px);
+  transform: translateX(18px); 
 }
 
 input:checked + .slider {
@@ -326,18 +337,17 @@ input:checked + .slider:before {
   transform: translateX(20px);
 }
 
+
 .auth-box h1 {
   margin-bottom: 20px;
   font-size: 28px;
 }
-
 
 .msg {
   color: #d9534f;
   margin-bottom: 15px;
   font-size: 14px;
 }
-
 
 .auth-form {
   display: flex;
@@ -361,7 +371,6 @@ input:checked + .slider:before {
   border-color: #007bff;
 }
 
-
 .auth-form button {
   padding: 10px;
   border: none;
@@ -377,7 +386,6 @@ input:checked + .slider:before {
   background-color: var(--button-hover);
 }
 
-
 .toggle-text {
   margin-top: 15px;
   font-size: 14px;
@@ -389,12 +397,43 @@ input:checked + .slider:before {
   align-items: center;
   margin-bottom: 20px;
   gap: 8px;
-  flex-wrap: wrap; 
-}
-
+  flex-wrap: wrap;
 
 @media (max-width: 480px) {
   .auth-box {
     padding: 30px 20px;
   }
+}
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 40px; 
+}
+
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #222;
+  opacity: 0.8;
+  transition: color 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+  filter: brightness(1.1);
+}
+
+.eye-icon:hover {
+  opacity: 1;
+  color: #000; 
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
+
+body.dark .eye-icon {
+  filter: brightness(1.3);
 }
